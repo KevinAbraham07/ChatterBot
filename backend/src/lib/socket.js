@@ -5,11 +5,17 @@ import express from "express";
 const app = express();
 const server = http.createServer(app);
 
-const allowedOrigins =
-  process.env.FRONTEND_URL || process.env.CLIENT_URL || "http://localhost:5173";
+// Configure Socket.io CORS with multiple allowed origins
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  process.env.CLIENT_URL,
+  "https://chatterbotonline.onrender.com",
+  "http://localhost:5173",
+].filter(Boolean); // Remove any undefined values
+
 const io = new Server(server, {
   cors: {
-    origin: Array.isArray(allowedOrigins) ? allowedOrigins : [allowedOrigins],
+    origin: allowedOrigins.length > 0 ? allowedOrigins : "*",
     credentials: true,
   },
 });

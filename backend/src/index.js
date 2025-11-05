@@ -18,12 +18,26 @@ const __dirname = path.resolve();
 
 app.use(express.json());
 app.use(cookieParser());
+
+// Configure CORS with multiple allowed origins
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  process.env.CLIENT_URL,
+  "https://chatterbotonline.onrender.com",
+  "http://localhost:5173",
+].filter(Boolean); // Remove any undefined values
+
 app.use(
   cors({
-    origin:
-      process.env.FRONTEND_URL ||
-      process.env.CLIENT_URL ||
-      "http://localhost:5173",
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(null, true); // Allow all origins in production for now
+      }
+    },
     credentials: true,
   })
 );
