@@ -1,8 +1,15 @@
-FROM node:18
+
+FROM node:18 AS build
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
-ENV PORT=5173
-EXPOSE 5173
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+RUN npm run build
+
+FROM node:18
+WORKDIR /app
+RUN npm install -g serve
+COPY --from=build /app/dist .
+ENV PORT=3000
+EXPOSE 3000
+CMD ["serve", "-s", ".", "-l", "3000"]
